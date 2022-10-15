@@ -30,7 +30,7 @@ function App() {
         setTime(unixToTime(res.data['city']['sunset']));
       })
       .catch(err => {console.log('error')})
-  });
+  }, []);
 
 
 
@@ -61,5 +61,7 @@ function App() {
      </body>
   );
 }
+
+
 
 export default App;
