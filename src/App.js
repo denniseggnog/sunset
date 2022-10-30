@@ -7,30 +7,34 @@ import {unixToTime} from './unix.js'
 function App() {
   // inputs
   const myKey = key;
-  const lat = '42.53';
-  const long = '-71.35';
+  const lat = '43.76';
+  const long = '11.25';
   const lang = 'en';
   const units = 'metric'
   const cnt = 10;
   const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`
 
 
-  const [score, setScore] = useState(0);
-  const [location, setLoc] = useState('Earth');
-  const [time, setTime] = useState('7:43pm');
+  const [score, setScore] = useState("N/A");
+  const [location, setLoc] = useState('N/A');
+  const [time, setTime] = useState('N/A');
+  const [isLoading, setIsLoading] = useState(false);
 
+  const handleClick = () => {
+    setIsLoading(true);
 
-
-  useEffect(() => {
     axios
       .get(url)
       .then(res => {
-        setScore(Math.round(calculateScore(res.data)));
+        setScore(Math.round(calculateScore(res.data)) + "/10");
         setLoc(res.data['city']['name']);
         setTime(unixToTime(res.data['city']['sunset']));
+        setIsLoading(false);
       })
-      .catch(err => {console.log('error')})
-  }, []);
+      .catch(err => {alert('error')})
+  }
+
+
 
 
 
@@ -51,7 +55,15 @@ function App() {
                  <div id="hero" className="flex justify-center -mt-24 text-white">
                      <div id="text" className="text-left">
                          <h2 className="text-md">How's the sunset today?</h2>
-                         <h1 className="text-9xl">{score}/10</h1>
+                         {!isLoading ? (<h1 className="text-9xl">{score}</h1>) : (<h1 className="text-9xl">...</h1>)}
+                         <div className="form-control">
+                           <label className="input-group py-4">
+                                <input type="text" placeholder="Enter location" className="input input-bordered bg-opacity-80" />
+                                <button class="btn btn-square" onClick={handleClick}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                </button>
+                           </label>
+                         </div>
                      </div>
                  </div>
                  <div id="bottom">
