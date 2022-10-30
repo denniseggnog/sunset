@@ -1,5 +1,5 @@
 export function calculateScore(stuff){
-    
+
         function findTimeNearSunset(data){
         let sunsetTime = data['city']['sunset'];
         let dataToAnalyze = data['list'][0];
@@ -118,14 +118,6 @@ export function calculateScore(stuff){
     }
 
 
-    function unixToDate(unix){
-        var date = new Date(unix * 1000);
-        var hours = date.getHours();
-        var minutes = "0" + date.getMinutes();
-        var seconds = "0" + date.getSeconds();
-        var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-        return formattedTime;
-    }
 
     function militaryToStandard(time){
         time = time.split(':');
@@ -143,3 +135,4 @@ export function calculateScore(stuff){
 
     return sunsetModel(stuff);
 }
+

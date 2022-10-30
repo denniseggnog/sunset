@@ -7,18 +7,24 @@ import {unixToTime} from './unix.js'
 function App() {
   // inputs
   const myKey = key;
-  const lat = '43.76';
-  const long = '11.25';
+  const [lati, setLati] = useState('');
+  const [long, setLong] = useState('');
   const lang = 'en';
   const units = 'metric'
   const cnt = 10;
-  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`
-
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lati}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`
+  // geocoding inputs
+  const [city, setCity] = useState("");
+  const [stateCode, setStateCode] = useState("");
+  const [countryCode, setCountryCode] = useState("");
 
   const [score, setScore] = useState("N/A");
   const [location, setLoc] = useState('N/A');
   const [time, setTime] = useState('N/A');
   const [isLoading, setIsLoading] = useState(false);
+
+  const [input, setInput] = useState('');
+  const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${stateCode},${countryCode}&limit=5&appid=${myKey}`
 
   const handleClick = () => {
     setIsLoading(true);
@@ -34,10 +40,45 @@ function App() {
       .catch(err => {alert('error')})
   }
 
+    function handleString(string) {
+        const arr = string.split(',');
+        if (arr.length === 0) {
+            alert("Please input location in the format: city, full state name, country code (with the commas)")
+        }
+        else if (arr.length === 1) {
+            setCity(arr[0]);
+        }
+        else if (arr.length === 2) {
+            setCity(arr[0]);
+            setCountryCode(arr[1]);
+        }
+        else if (arr.length === 3){
+            setCity(arr[0]);
+            setStateCode(arr[1]);
+            setCountryCode(arr[2]);
+        }
 
 
+    }
 
+    function handleSubmit () {
+        alert(geoUrl);
+        handleString(input);
+        axios
+            .get(geoUrl)
+            .then(res => {
+                setLati(res.data[0]["lat"]);
+                setLong(res.data[0]["lon"]);
+                alert(`this is lat: ${lati} this is long ${long}`);
+            })
+            .catch(err => {alert('error')});
+        
+        handleClick();
+    }
 
+    function handleInput(event) {
+        setInput(event.target.value);
+    }
 
   return (
     <body className="text-gray-900 font-sans">
@@ -58,8 +99,8 @@ function App() {
                          {!isLoading ? (<h1 className="text-9xl">{score}</h1>) : (<h1 className="text-9xl">...</h1>)}
                          <div className="form-control">
                            <label className="input-group py-4">
-                                <input type="text" placeholder="Enter location" className="input input-bordered bg-opacity-80" />
-                                <button class="btn btn-square" onClick={handleClick}>
+                                <input type="text" placeholder="Enter location" className="input input-bordered bg-opacity-80" value={input} onChange={handleInput} />
+                                <button class="btn btn-square " onClick={handleSubmit}>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 </button>
                            </label>
@@ -73,7 +114,5 @@ function App() {
      </body>
   );
 }
-
-
 
 export default App;
