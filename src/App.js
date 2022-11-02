@@ -14,9 +14,9 @@ function App() {
   const cnt = 10;
   const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lati}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`
   // geocoding inputs
-  const [city, setCity] = useState("");
-  const [stateCode, setStateCode] = useState("");
-  const [countryCode, setCountryCode] = useState("");
+  const [city, setCity] = useState('');
+  const [stateCode, setStateCode] = useState('');
+  const [countryCode, setCountryCode] = useState('');
 
   const [score, setScore] = useState("N/A");
   const [location, setLoc] = useState('N/A');
@@ -38,10 +38,18 @@ function App() {
         setIsLoading(false);
       })
       .catch(err => {alert('error')})
+
+
   }
 
     function handleString(string) {
+        setCity('');
+        setCountryCode('');
+        setStateCode('');
+
+
         const arr = string.split(',');
+
         if (arr.length === 0) {
             alert("Please input location in the format: city, full state name, country code (with the commas)")
         }
@@ -49,7 +57,9 @@ function App() {
             setCity(arr[0]);
         }
         else if (arr.length === 2) {
-            setCity(arr[0]);
+
+            let tempCity = JSON.stringify(arr[0])
+            setCity(tempCity);
             setCountryCode(arr[1]);
         }
         else if (arr.length === 3){
@@ -58,11 +68,9 @@ function App() {
             setCountryCode(arr[2]);
         }
 
-
     }
 
     function handleSubmit () {
-        alert(geoUrl);
         handleString(input);
         axios
             .get(geoUrl)
@@ -72,13 +80,16 @@ function App() {
                 alert(`this is lat: ${lati} this is long ${long}`);
             })
             .catch(err => {alert('error')});
-        
         handleClick();
     }
 
-    function handleInput(event) {
-        setInput(event.target.value);
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleSubmit();
+        }
     }
+    
+
 
   return (
     <body className="text-gray-900 font-sans">
@@ -99,7 +110,7 @@ function App() {
                          {!isLoading ? (<h1 className="text-9xl">{score}</h1>) : (<h1 className="text-9xl">...</h1>)}
                          <div className="form-control">
                            <label className="input-group py-4">
-                                <input type="text" placeholder="Enter location" className="input input-bordered bg-opacity-80" value={input} onChange={handleInput} />
+                                <input type="text" placeholder="Enter location" className="input input-bordered bg-opacity-80" value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKeyDown} />
                                 <button class="btn btn-square " onClick={handleSubmit}>
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 </button>
