@@ -87,7 +87,7 @@ function App() {
                 long = res.data[0]["lon"];
                 handleClick(lati, long);
             })
-            .catch(err => {alert('error')});
+            .catch(err => {alert('Error, cannot find the location. Please check your spelling and try again.')});
     }
 
     const handleKeyDown = (event) => {
