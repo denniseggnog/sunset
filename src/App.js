@@ -7,16 +7,21 @@ import {unixToTime} from './unix.js'
 function App() {
   // inputs
   const myKey = key;
-  const [lati, setLati] = useState('');
-  const [long, setLong] = useState('');
+  // const [lati, setLati] = useState('');
+  // const [long, setLong] = useState('');
+  let lati = '';
+  let long = '';
   const lang = 'en';
   const units = 'metric'
   const cnt = 10;
-  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lati}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`
+  let url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lati}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`
   // geocoding inputs
-  const [city, setCity] = useState('');
-  const [stateCode, setStateCode] = useState('');
-  const [countryCode, setCountryCode] = useState('');
+  // const [city, setCity] = useState('');
+  // const [stateCode, setStateCode] = useState('');
+  // const [countryCode, setCountryCode] = useState('');
+  let city = '';
+  let stateCode = '';
+  let countryCode = '';
 
   const [score, setScore] = useState("N/A");
   const [location, setLoc] = useState('N/A');
@@ -24,11 +29,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [input, setInput] = useState('');
-  const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${stateCode},${countryCode}&limit=5&appid=${myKey}`
+  let geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${stateCode},${countryCode}&limit=5&appid=${myKey}`
 
-  const handleClick = () => {
+  const handleClick = (latitude, longitude) => {
     setIsLoading(true);
-
+    lati = latitude;
+    long = longitude;
+    url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lati}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`;
     axios
       .get(url)
       .then(res => {
@@ -43,10 +50,11 @@ function App() {
   }
 
     function handleString(string) {
-        setCity('');
-        setCountryCode('');
-        setStateCode('');
-
+        city = '';
+        countryCode = '';
+        stateCode = '';
+        // setCountryCode('');
+        // setStateCode('');
 
         const arr = string.split(',');
 
@@ -54,20 +62,18 @@ function App() {
             alert("Please input location in the format: city, full state name, country code (with the commas)")
         }
         else if (arr.length === 1) {
-            setCity(arr[0]);
+            city = arr[0];
         }
         else if (arr.length === 2) {
-
-            let tempCity = JSON.stringify(arr[0])
-            setCity(tempCity);
-            setCountryCode(arr[1]);
+            city = arr[0];
+            countryCode = arr[1];
         }
         else if (arr.length === 3){
-            setCity(arr[0]);
-            setStateCode(arr[1]);
-            setCountryCode(arr[2]);
+            city = arr[0];
+            stateCode = arr[1]
+            countryCode = arr[2];
         }
-
+        geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${city},${stateCode},${countryCode}&limit=5&appid=${myKey}`;
     }
 
     function handleSubmit () {
@@ -75,12 +81,11 @@ function App() {
         axios
             .get(geoUrl)
             .then(res => {
-                setLati(res.data[0]["lat"]);
-                setLong(res.data[0]["lon"]);
-                alert(`this is lat: ${lati} this is long ${long}`);
+                lati = res.data[0]["lat"];
+                long = res.data[0]["lon"];
+                handleClick(lati, long);
             })
             .catch(err => {alert('error')});
-        handleClick();
     }
 
     const handleKeyDown = (event) => {
