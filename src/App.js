@@ -3,6 +3,7 @@ import {key} from './Key.js';
 import React, { useEffect, useState } from "react";
 import {calculateScore} from './calculateScore.js';
 import {unixToTime} from './unix.js'
+import Modal from './Modal.js';
 
 function App() {
   // inputs
@@ -36,6 +37,7 @@ function App() {
     lati = latitude;
     long = longitude;
     url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lati}&lon=${long}&appid=${myKey}&lang=${lang}&units=${units}&cnt=${cnt}`;
+    console.log(url);
     axios
       .get(url)
       .then(res => {
@@ -94,40 +96,42 @@ function App() {
         }
     }
     
-
+    const [showModal, setShowModal] = useState(true);
+    const handleOnClose = () => setShowModal(false);
 
   return (
-    <body className="text-gray-900 font-sans">
-            <div style={{backgroundImage: `url('https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_1280.png')`,  backgroundRepeat: 'no-repeat'}} className="h-screen min-w-full bg-cover flex flex-col justify-between">
-                <div id="nav-bar" className="m-4">
-                    <nav className="flex justify-between">
-                        <div className="flex align-middle">
-                            <h3 className="font-bold text-4xl text-white">Sunset</h3>
+    <div>
+       <div className="text-gray-900 font-sans">
+               <div style={{backgroundImage: `url('https://cdn.pixabay.com/photo/2012/08/27/14/19/mountains-55067_1280.png')`,  backgroundRepeat: 'no-repeat'}} className="h-screen min-w-full bg-cover flex flex-col justify-between">
+                   <div id="nav-bar" className="m-4">
+                       <nav className="flex justify-between">
+                           <div className="flex align-middle">
+                               <h3 className="font-bold text-4xl text-white">Sunset</h3>
+                           </div>
+                           <div className="flex align-middle"></div>
+                       </nav>
+                   </div>
+                    <div id="hero" className="flex justify-center -mt-24 text-white">
+                        <div id="text" className="text-left">
+                            <h2 className="text-md">How's the sunset today?</h2>
+                            {!isLoading ? (<h1 className="text-9xl">{score}</h1>) : (<h1 className="text-9xl">...</h1>)}
+                            <div className="form-control">
+                              <label className="input-group py-4">
+                                   <input type="text" placeholder="Enter location" className="input input-bordered bg-opacity-80" value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKeyDown} />
+                                   <button class="btn btn-square " onClick={handleSubmit}>
+                                       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                   </button>
+                              </label>
+                            </div>
                         </div>
-                        <div className="flex align-middle">
-
-                        </div>
-                    </nav>
+                    </div>
+                    <div id="bottom">
+                        <h2 className="text-gray-50 text-sm p-1">The sun sets at {time} in {location}</h2>
+                    </div>
                 </div>
-                 <div id="hero" className="flex justify-center -mt-24 text-white">
-                     <div id="text" className="text-left">
-                         <h2 className="text-md">How's the sunset today?</h2>
-                         {!isLoading ? (<h1 className="text-9xl">{score}</h1>) : (<h1 className="text-9xl">...</h1>)}
-                         <div className="form-control">
-                           <label className="input-group py-4">
-                                <input type="text" placeholder="Enter location" className="input input-bordered bg-opacity-80" value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKeyDown} />
-                                <button class="btn btn-square " onClick={handleSubmit}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                                </button>
-                           </label>
-                         </div>
-                     </div>
-                 </div>
-                 <div id="bottom">
-                     <h2 className="text-gray-50 text-sm p-1">The sun sets at {time} in {location}</h2>
-                 </div>
-             </div>
-     </body>
+        </div>
+        <Modal onClose={handleOnClose} visible={showModal}/>
+    </div>
   );
 }
 
